@@ -35,7 +35,7 @@ iii. Category = 2643 for the foreign key : "business_id"
 iv. Attribute = 1115 for the foreign key : "business_id"
 v. Review = 10000 for the primary key : "id", 8090  for the foreign key : "business_id", 9581  for the foreign key : "business_id"
 vi. Checkin = 493  for the foreign key : "business_id"
-vii. Photo = 10000 for the primary key : "id", 
+vii. Photo = 10000 for the primary key : "id",
 viii. Tip =
 ix. User =
 x. Friend =
@@ -151,28 +151,106 @@ Part 2: Inferences and Analysis
 
 i. Do the two groups you chose to analyze have a different distribution of hours?
 
+I have chosen Pittsburgh as a city,and Food as a category.
+for the total number of hours, I found that the businesses with 4-5 stars have more hours than the other with 2-3 stars.
+For the food category, I found that it had only businesses with 4-5 stars
+THE 4-5 stars business contain the attribute WheelchairAccessible, and the 2-3 stars contain BusinessParking
+
 
 ii. Do the two groups you chose to analyze have a different number of reviews?
-
+No , the 2-3 group has 12 reviews but the 4-5 group has 11 reviews. It look actually like they have approximately the same number of reviews.
 
 iii. Are you able to infer anything from the location data provided between these two groups? Explain.
 
+Actually, neighborhood didn't give me more information to reach a conclusion
+
 SQL code used for analysis:
 
+SELECT B.stars, H.hours
+from business B INNER JOIN hours H
+ON B.id == H.business_id
+WHERE city = 'Pittsburgh'
+group by stars
 
++-------+----------------------+
+| stars | hours                |
++-------+----------------------+
+|   2.5 | Saturday|11:00-3:00  |
+|   3.0 | Saturday|11:00-0:00  |
+|   5.0 | Saturday|10:00-18:00 |
++-------+----------------------+
+
+SELECT C.category, B.stars
+FROM category C INNER JOIN business B
+ON C.business_id = B.id
+WHERE B.city = 'Pittsburgh'
+group by B.stars
+
++-----------+-------+
+| category  | stars |
++-----------+-------+
+| Pizza     |   2.5 |
+| Mexican   |   3.0 |
+| Nightlife |   3.5 |
+| Food      |   4.5 |
+| Shopping  |   5.0 |
++-----------+-------+
+
+SELECT Count(R.id) as reviews, B.stars
+FROM business B INNER JOIN review R
+ON B.id = R.business_id
+WHERE B.city = 'Pittsburgh'
+group by B.stars
+
++---------+-------+
+| reviews | stars |
++---------+-------+
+|       1 |   2.0 |
+|       1 |   2.5 |
+|       3 |   3.0 |
+|       7 |   3.5 |
+|       5 |   4.0 |
+|       5 |   4.5 |
+|       1 |   5.0 |
++---------+-------+
+
+SELECT neighborhood, stars
+from business
+WHERE city = 'Pittsburgh'
+group by stars
+
++-------------------+-------+
+| neighborhood      | stars |
++-------------------+-------+
+|                   |   1.0 |
+| The Hill District |   1.5 |
+|                   |   2.0 |
+|                   |   2.5 |
+| Greentree         |   3.0 |
+|                   |   3.5 |
+| South Side        |   4.0 |
+|                   |   4.5 |
+| Overbrook         |   5.0 |
++-------------------+-------+
 
 2. Group business based on the ones that are open and the ones that are closed. What differences can you find between the ones that are still open and the ones that are closed? List at least two differences and the SQL code you used to arrive at your answer.
 
 i. Difference 1:
 
+sum of review_count equals to 35261 where is_open(closed) is 0 and 269300 where is_open = 1
+
 
 ii. Difference 2:
 
-
+number of businesses is 1520 for the closed ones and 8480 for the opened
 
 SQL code used for analysis:
 
-
+SELECT  SUM(review_count),
+COUNT(id),
+*
+from business
+GROUP BY is_open
 
 3. For this last part of your analysis, you are going to choose the type of analysis you want to conduct on the Yelp dataset and are going to prepare the data for analysis.
 
@@ -180,11 +258,61 @@ Ideas for analysis include: Parsing out keywords and business attributes for sen
 
 i. Indicate the type of analysis you chose to do:
 
+I am gonna try to predict if it's a good choice to start your new business in a specific location
 
 ii. Write 1-2 brief paragraphs on the type of data you will need for your analysis and why you chose that data:
+
+I have chosen that type of date to analyze because I believe it's a good choice to predict and review all the statistics
+about a location before you start your new business so you can maximize the opportunity of success and minimize the risk.
+Am gonna also study the number of reviews because if will give us the information about how a business is popular in that location,
+so if the number of revies is low in the business you wanna open , it's a good opportunity for your business to grow up.
+we have to study also the number of stars so you can push your new work in right place.
 
 
 iii. Output of your finished dataset:
 
++----------------------------------------------------+-------------+--------------------------------------+-------------+-----------------+-------+------+
+| name                                               | postal_code | business_address                     | star_rating | numberofreviews | funny | cool |
++----------------------------------------------------+-------------+--------------------------------------+-------------+-----------------+-------+------+
+| Now and Zen Massage Therapy                        | 89128       | 7455 W Washington Ave, Ste 210       |         5.0 |              32 |     0 |    0 |
+| I'm Board! Games & Family Fun                      | 53562       | 6917 University Ave                  |         5.0 |              19 |     0 |    0 |
+| Torontoism - Sotheby's International Realty Canada | M4S 1Y5     | 1867 Yonge Street, Suite 100         |         5.0 |               7 |     0 |    0 |
+| Results Only                                       | 85020       | 7030 N 7th St                        |         5.0 |               7 |     0 |    0 |
+| Orleans Spa & Fitness Center                       | 89103       | 4500 W Tropicana Ave                 |         5.0 |               4 |     0 |    0 |
+| Doc Porter's Distillery                            | 28217       | 232 Peterson Dr                      |         5.0 |              22 |     0 |    0 |
+| Celebrity Skin                                     | 85251       | 7105 E 1st Ave                       |         5.0 |              48 |     0 |    0 |
+| Vintage Pools                                      | 89118       | 4000 W Ali Baba Ln, Ste E            |         5.0 |               4 |     0 |    0 |
+| Marco & Wimmer                                     | 85201       | 123 N Centennial Way, Ste 110        |         5.0 |               4 |     1 |    1 |
+| Kroll Thomas, OD                                   | 89074       | 305 N Pecos Rd                       |         5.0 |              14 |     0 |    0 |
+| Arbor Care Tree Service                            | 85283       | 5235 S Kyrene Rd, Ste 210            |         5.0 |              91 |     0 |    7 |
+| Kimberfire                                         | M5C 2M6     | 27 Queen Street E, Suite 1204        |         5.0 |              27 |     0 |    0 |
+| Kimberfire                                         | M5C 2M6     | 27 Queen Street E, Suite 1204        |         5.0 |              27 |     0 |    0 |
+| Enroute Coffee and Tea House                       | 85338       | 15605 W Roosevelt St, Ste 107        |         5.0 |              67 |     0 |    0 |
+| Senior's Barber Shop                               | 85395       | 13375 W McDowell                     |         5.0 |              54 |     0 |    0 |
+| Hair Affair                                        | 85251       | 7007 E 5th Ave, Ste 2                |         5.0 |               5 |     0 |    0 |
+| Hair Now Salon                                     | 89183       | 9850 South Maryland Pkwy, Ste 101    |         5.0 |               3 |     0 |    0 |
+| Club Pilates Chandler                              | 85249       | 4085 South Gilbert Rd, Shops B Ste 5 |         5.0 |               5 |     0 |    1 |
+| LunchboxWax Scottsdale                             | 85253       | 6590 N Scottsdale Blvd, Ste 130      |         5.0 |             112 |     0 |    0 |
+| D & D Discount Motorcycles                         | 85281       | 617 S McClintock Dr, Ste 5           |         5.0 |              11 |     0 |    0 |
+| 4E Kennels                                         | 89147       |                                      |         5.0 |              24 |     0 |    0 |
+| Eleve Training Studios                             | 89147       | 4845 S Fort Apache Rd, Ste D-1       |         5.0 |              37 |     0 |    0 |
+| Discotech Nightlife Concierge                      | 89103       | 4471 Dean Martin Dr, Ste 2401        |         5.0 |              45 |     0 |    0 |
+| Mulligans Pub                                      | 44021       | 13768 Main Market Rd                 |         5.0 |               3 |     0 |    0 |
+| The Art Theater                                    | 61820       | 126 W Church                         |         5.0 |              31 |     0 |    0 |
++----------------------------------------------------+-------------+--------------------------------------+-------------+-----------------+-------+------+
+(Output limit exceeded, 25 of 636 total rows shown)
+
 
 iv. Provide the SQL code you used to create your final dataset:
+
+SELECT B.name,
+B.postal_code as postal_code,
+B.address as business_address,
+B.stars as star_rating,
+B.review_count as numberofreviews,
+R.funny,
+R.cool
+FROM business B INNER JOIN review R
+ON B.id = R.business_id
+
+ORDER BY B.stars DESC
