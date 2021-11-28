@@ -1,1 +1,1 @@
-# Yelp-Dataset-SQL-Lookup
+# Manipulating DATA and make analysis and predictions about a database. 
